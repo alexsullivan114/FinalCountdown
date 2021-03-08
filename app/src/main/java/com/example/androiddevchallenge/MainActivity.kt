@@ -60,7 +60,7 @@ fun MyApp() {
 @Composable
 fun TimerView() {
     val state = remember {
-        val state = mutableStateOf(1000)
+        val state = mutableStateOf(10)
         val handler = Handler()
         val runnable = object: Runnable {
             override fun run() {
@@ -85,7 +85,14 @@ fun TimerView(totalSecs: Int) {
         val hours = totalSecs / 3600;
         val minutes = (totalSecs % 3600) / 60;
         val seconds = totalSecs % 60;
-        Text("$hours:$minutes:$seconds")
+        if (hours <= 0 && minutes <= 0 && seconds < 0) {
+            Text("Donezo")
+        } else {
+            val hoursString = String.format("%02d", hours)
+            val minutesString = String.format("%02d", minutes)
+            val secondsString = String.format("%02d", seconds)
+            Text("$hoursString:$minutesString:$secondsString")
+        }
     }
 }
 
