@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.androiddevchallenge.ui.theme.MyTheme
+import java.text.SimpleDateFormat
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,13 +76,16 @@ fun TimerView() {
 }
 
 @Composable
-fun TimerView(seconds: Int) {
+fun TimerView(totalSecs: Int) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Text("$seconds")
+        val hours = totalSecs / 3600;
+        val minutes = (totalSecs % 3600) / 60;
+        val seconds = totalSecs % 60;
+        Text("$hours:$minutes:$seconds")
     }
 }
 
