@@ -57,9 +57,11 @@ class MainActivity : AppCompatActivity() {
 // Start building your app here!
 @Composable
 fun MyApp() {
-    Surface(modifier = Modifier
-        .fillMaxHeight()
-        .fillMaxWidth()) {
+    Surface(
+        modifier = Modifier
+            .fillMaxHeight()
+            .fillMaxWidth()
+    ) {
         TimerView()
     }
 }
@@ -99,7 +101,7 @@ fun TimerView() {
     val state = remember {
         val state = mutableStateOf(1000)
         val handler = Handler()
-        val runnable = object: Runnable {
+        val runnable = object : Runnable {
             override fun run() {
                 state.value = state.value - 1
                 handler.postDelayed(this, 1000)
@@ -142,7 +144,6 @@ fun TimerView(totalSecs: Int) {
         VerticalDigits(secondOnes)
     }
 }
-
 
 private fun verticalDigitTranslation(centeredOn: Int, heightPixels: Float): Float {
     return when (centeredOn) {
