@@ -17,28 +17,16 @@ package com.example.androiddevchallenge
 
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
-import android.view.Gravity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Colors
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -46,8 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.androiddevchallenge.ui.theme.MyTheme
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,23 +57,32 @@ fun MyApp() {
 }
 
 @Composable
-fun VerticalDigits(modifier: Modifier = Modifier) {
+fun VerticalDigits(focusedDigit: Int) {
     val height = 50.dp
-    val style = TextStyle(fontSize = 45.sp)
+    val heightPixels = LocalDensity.current.run { height.toPx() }
+    val translation: Float by animateFloatAsState(
+        targetValue = verticalDigitTranslation(focusedDigit, heightPixels)
+    )
     val heightModifier = Modifier.height(height)
-    return BoxWithConstraints(modifier = modifier) {
-        Column {
-            Text("0", style = style, modifier = heightModifier)
-            Text("1", style = style, modifier = heightModifier)
-            Text("2", style = style, modifier = heightModifier)
-            Text("3", style = style, modifier = heightModifier)
-            Text("4", style = style, modifier = heightModifier)
-            Text("5", style = style, modifier = heightModifier)
-            Text("6", style = style, modifier = heightModifier)
-            Text("7", style = style, modifier = heightModifier)
-            Text("8", style = style, modifier = heightModifier)
-            Text("9", style = style, modifier = heightModifier)
+    fun getStyle(digit: String): TextStyle {
+        val style = TextStyle(fontSize = 45.sp, color = Color.LightGray)
+        return if (focusedDigit.toString() == digit) {
+            style.copy(color = Color.Red)
+        } else {
+            style
         }
+    }
+    return Column(modifier = Modifier.graphicsLayer(translationY = translation)) {
+        Text("0", style = getStyle("0"), modifier = heightModifier)
+        Text("1", style = getStyle("1"), modifier = heightModifier)
+        Text("2", style = getStyle("2"), modifier = heightModifier)
+        Text("3", style = getStyle("3"), modifier = heightModifier)
+        Text("4", style = getStyle("4"), modifier = heightModifier)
+        Text("5", style = getStyle("5"), modifier = heightModifier)
+        Text("6", style = getStyle("6"), modifier = heightModifier)
+        Text("7", style = getStyle("7"), modifier = heightModifier)
+        Text("8", style = getStyle("8"), modifier = heightModifier)
+        Text("9", style = getStyle("9"), modifier = heightModifier)
     }
 }
 
@@ -121,44 +116,22 @@ fun TimerView(totalSecs: Int) {
     val secondOnes = seconds % 10
     val secondTens = seconds / 10
 
-    val height = 50.dp
-    val heightPixels = LocalDensity.current.run { height.toPx() }
-
-    val secondsOnesTranslation: Float by animateFloatAsState(
-        targetValue = verticalDigitTranslation(secondOnes, heightPixels)
-    )
-    val secondsTensTranslation: Float by animateFloatAsState(
-        targetValue = verticalDigitTranslation(secondTens, heightPixels)
-    )
-    val minutesOnesTranslation: Float by animateFloatAsState(
-        targetValue = verticalDigitTranslation(minutesOnes, heightPixels)
-    )
-    val minutesTensTranslation: Float by animateFloatAsState(
-        targetValue = verticalDigitTranslation(minutesTens, heightPixels)
-    )
-    val hoursTensTranslation: Float by animateFloatAsState(
-        targetValue = verticalDigitTranslation(hoursTens, heightPixels)
-    )
-    val hoursOnesTranslation: Float by animateFloatAsState(
-        targetValue = verticalDigitTranslation(hoursOnes, heightPixels)
-    )
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         // Hours
-        VerticalDigits(modifier = Modifier.graphicsLayer(translationY = hoursTensTranslation))
-        VerticalDigits(modifier = Modifier.graphicsLayer(translationY = hoursOnesTranslation))
+        VerticalDigits(hoursTens)
+        VerticalDigits(hoursOnes)
         Text(":", modifier = Modifier.padding(4.dp))
         // Minutes
-        VerticalDigits(modifier = Modifier.graphicsLayer(translationY = minutesTensTranslation))
-        VerticalDigits(modifier = Modifier.graphicsLayer(translationY = minutesOnesTranslation))
+        VerticalDigits(minutesTens)
+        VerticalDigits(minutesOnes)
         Text(":", modifier = Modifier.padding(4.dp))
         // Seconds
-        VerticalDigits(modifier = Modifier.graphicsLayer(translationY = secondsTensTranslation))
-        VerticalDigits(modifier = Modifier.graphicsLayer(translationY = secondsOnesTranslation))
+        VerticalDigits(secondTens)
+        VerticalDigits(secondOnes)
     }
 }
 
@@ -177,20 +150,4 @@ private fun verticalDigitTranslation(centeredOn: Int, heightPixels: Float): Floa
         0 -> 4.5 * heightPixels
         else -> 0.0
     }.toFloat()
-}
-
-@Preview("Light Theme", widthDp = 360, heightDp = 640)
-@Composable
-fun LightPreview() {
-    MyTheme {
-        MyApp()
-    }
-}
-
-@Preview("Dark Theme", widthDp = 360, heightDp = 640)
-@Composable
-fun DarkPreview() {
-    MyTheme(darkTheme = true) {
-        MyApp()
-    }
 }
