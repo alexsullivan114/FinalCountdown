@@ -16,12 +16,22 @@
 package com.example.androiddevchallenge
 
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
+import android.view.Gravity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.androiddevchallenge.ui.theme.MyTheme
 
@@ -39,8 +49,39 @@ class MainActivity : AppCompatActivity() {
 // Start building your app here!
 @Composable
 fun MyApp() {
-    Surface(color = MaterialTheme.colors.background) {
-        Text(text = "Ready... Set... GO!")
+    Surface(modifier = Modifier
+        .fillMaxHeight()
+        .fillMaxWidth()) {
+        TimerView()
+    }
+}
+
+@Composable
+fun TimerView() {
+    val state = remember {
+        val state = mutableStateOf(1000)
+        val handler = Handler()
+        val runnable = object: Runnable {
+            override fun run() {
+                state.value = state.value - 1
+                handler.postDelayed(this, 1000)
+            }
+        }
+        handler.postDelayed(runnable, 1000)
+        state
+    }
+
+    TimerView(state.value)
+}
+
+@Composable
+fun TimerView(seconds: Int) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text("$seconds")
     }
 }
 
